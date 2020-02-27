@@ -11,3 +11,17 @@ https://vinagit.github.io/vinagit_webgis_class/docs/chuongtrinh.html
 
 https://vinagit.github.io/vinagit_webgis_class/docs/lichhoc.html
 
+
+
+```bash
+
+http://localhost/vinagit_class/html_form/form1.html
+
+Phương thức GET (GET Method)
+http://localhost/vinagit_class/html_form/form1.html?txt_ten=111111&txt_diachi=2222222
+
+POST Method
+
+http://localhost/vinagit_class/html_form/form1.html?txt_ten=11111&txt_diachi=222222222&mausac=M%C3%A0u+v%C3%A0ng
+
+```
