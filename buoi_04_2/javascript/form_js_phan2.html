@@ -1,0 +1,117 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Javascript Form</title>
+    </head>
+    <body>
+        <form name="dkthanhvien" method="GET">
+            Nhập tên: <input type="text" name="txt_ten" id="txt_ten" value="" placeholder="Nhập tên...">
+            <br>
+            Nhập tuổi: <input type="number" name="txt_tuoi" id="txt_tuoi" value="" placeholder="Nhập tuổi...">
+            <br>
+            Nhập địa chỉ: <input type="text" name="txt_diachi" id="txt_diachi" value="" placeholder="Nhập địa chỉ...">
+            <br>
+            Chọn màu sắc:
+                    <select name="mausac">
+                        <option>Màu xanh</option>
+                        <option>Màu đỏ</option>
+                        <option>Màu vàng</option>
+                        <option>Màu tím</option>
+                    </select>
+            <hr>
+            <input type="button" onclick="ham1();" value="Day la button">
+            <input type="submit" value="Day la submit">
+            <input type="reset" value="Day la reset">
+            <br>
+            Kết quả: <input type="text" id="txt_kq" disabled>
+            <br>
+            <div id="div_kq" style="background-color: yellow;">Kết quả ở đây...</div>
+        </form>
+
+        <script>
+            var txt_ten='Nguyen Van A 1';
+            var txt_mausac='Màu đỏ';
+            var num_a=20;
+            var num_b=3;
+            var txt_kq='Tên: '+txt_ten+num_b;
+            //alert(txt_kq);
+
+            /*
+            ==, <=, >=, <, >, !=
+            */
+            if(num_a>20){
+                alert(num_a+' > 20');
+            }else if(num_a==20){
+                //alert(num_a+' = 20');
+            }else{
+                alert(num_a+' < 20');
+            }
+
+            //Vòng lặp
+            for(i=0;i<=10;i++){
+                //console.log(i);
+            }
+
+            //Mảng - ARRAY
+            var mausac_arr=['Màu xanh','Màu đỏ','Màu vàng'];
+            var tinhthanh_arr=['Tinh A','Tinh B',12345,mausac_arr];
+
+            //console.log(tinhthanh_arr[3][1]);
+
+            for(i=0;i<tinhthanh_arr.length;i++){
+                //console.log(tinhthanh_arr[i]);
+            }
+
+            //Lấy giá trị của form
+            
+            function getValue(id){
+                //var txt_tuoi=document.getElementById('txt_tuoi').value;
+                var val=document.getElementById(id).value;
+                return val;
+            }
+
+            function ham1(){
+                var txt_tuoi=getValue('txt_tuoi');
+                var txt_ten=getValue('txt_ten');
+                console.log(txt_ten);
+                console.log(txt_tuoi);
+
+                var kq='<b>Tên</b>: '+txt_ten;
+                kq=kq+'<br> <b>Tuổi</b>: '+txt_tuoi;
+
+                document.getElementById('txt_kq').value=kq;
+                document.getElementById('div_kq').innerHTML=kq;
+            }
+
+            //Js loop
+            /* var tinhthanh_arr=['Tinh A','Tinh B','Tinh C','Tinh D','Tinh E','Tinh F','Tinh G','Tinh H','Tinh I','Tinh K','Tinh L','Tinh M'];
+
+            var ds_tinh='<select>';
+            for(i=0;i<tinhthanh_arr.length;i++){
+                //console.log(tinhthanh_arr[i]);
+                //ds_tinh=ds_tinh+'<li>'+tinhthanh_arr[i]+'</li>';
+                //ds_tinh+='<li>'+tinhthanh_arr[i]+'</li>';
+                ds_tinh+='<option>'+tinhthanh_arr[i]+'</option>';
+            }
+            ds_tinh+='</select>';
+            document.write(ds_tinh); */
+
+            function make_select(arr_input){
+                //var tinhthanh_arr=['Tinh A','Tinh B','Tinh C','Tinh D','Tinh E','Tinh F','Tinh G','Tinh H','Tinh I','Tinh K','Tinh L','Tinh M'];
+
+                var ds_tinh='<select>';
+                for(i=0;i<arr_input.length;i++){
+                    ds_tinh+='<option>'+arr_input[i]+'</option>';
+                }
+                ds_tinh+='</select>';
+                document.write(ds_tinh);
+            }
+
+            var mausac_arr=['Màu xanh','Màu đỏ','Màu vàng'];
+            var tinhthanh_arr=['Tinh A','Tinh B','Tinh C','Tinh D','Tinh E','Tinh F','Tinh G','Tinh H','Tinh I','Tinh K','Tinh L','Tinh M'];
+
+            make_select(mausac_arr);
+            make_select(tinhthanh_arr);
+        </script>
+    </body>
+</html>
