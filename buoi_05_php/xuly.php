@@ -12,7 +12,7 @@
     define("PG_HOST","localhost");
     define("PG_USER","postgres");
     define("PG_PORT","5435");
-    define("PG_PASS","******");
+    define("PG_PASS","V1nagit_2019");
     $dbcon=pg_connect("dbname=".PG_DB." user=".PG_USER." password=".PG_PASS." host=".PG_HOST." port=".PG_PORT);
 
     //Tao cau truy van
