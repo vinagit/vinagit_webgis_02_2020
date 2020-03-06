@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Bootstrap Example</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+</head>
+<body>
+
+<div class="container">
+  <h2>Danh sách học sinh</h2>
+  <p><a href="add_hocsinh.html">Thêm học sinh</a></p>
+
+  <form>
+      <input type="text" id="txt_keyword" name="txt_keyword" placeholder="Tìm học sinh...">
+      <input type="button" value="Tìm kiếm">
+  </form>
+
+  <table class="table table-hover">
+    <thead>
+      <tr>
+        <th>Id</th>
+        <th>Họ tên</th>
+        <th>Tuổi</th>
+        <th>Địa chỉ</th>
+        <th>Tỉnh thành</th>
+        <th>Chức năng</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>1</td>
+        <td>NGuyễn Văn A</td>
+        <td>12</td>
+        <td>Xóm 6, khu A,sjhjdshjd</td>
+        <td>Nghệ An</td>
+        <td><a href="update_hocsinh.html">Sửa</a> | Xóa</td>
+      </tr>
+      <tr>
+        <td>2</td>
+        <td>NGuyễn Văn B</td>
+        <td>12</td>
+        <td>Xóm 5, khu A,sjhjdshjd</td>
+        <td>Quảng Bình</td>
+        <td><a href="update_hocsinh.html">Sửa</a> | Xóa</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+</body>
+</html>
