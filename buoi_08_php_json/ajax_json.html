@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+</head>
+<body>
+
+<h1>The XMLHttpRequest Object</h1>
+
+<form action="xuly.php" method="GET">
+    <input type="text" name="txt_ten" id="txt_ten" placeholder="Tìm tên">
+
+    <!-- <button type="button" onclick="loadDoc()">Tìm kiếm</button> -->
+    <input type="button" value="Tìm kiếm" onclick="loadDoc()">
+    <!-- <input type="submit" value="Tìm kiếm"> -->
+
+    <p id="kq">Kết quả</p>
+</form>
+
+
+
+<script>
+function getValue(id){
+    //var txt_tuoi=document.getElementById('txt_tuoi').value;
+    var val=document.getElementById(id).value;
+    return val;
+}
+
+function parsekq(json){  
+  var ten='';
+  var rec=''
+  for(i=0;i<json.length;i++){
+    //ten+=json[i].ten;
+    //document.getElementById("kq").innerHTML = ten;
+    var txt_ten=json[i].ten;
+    var txt_tuoi=json[i].tuoi;
+    rec+='Tên: '+txt_ten;
+    rec+=' | ';
+    rec+='Tuổi: '+txt_tuoi;
+    rec+='<hr>';
+  }
+  document.getElementById("kq").innerHTML = rec;
+}
+
+function loadDoc() {
+  var xhttp = new XMLHttpRequest();
+  var txt_ten=getValue('txt_ten');
+  //alert(txt_ten);
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      var kqjson=JSON.parse(this.responseText);
+      //console.log(kqjson);
+      parsekq(kqjson);
+    }
+  };
+  xhttp.open("GET", "xuly2json.php?txt_ten="+txt_ten, true);
+  xhttp.send();
+}
+</script>
+
+</body>
+</html>
