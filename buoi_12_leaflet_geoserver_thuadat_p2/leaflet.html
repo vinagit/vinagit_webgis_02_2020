@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Làm quen với leaflet</title>
+        <script src="https://code.jquery.com/jquery-3.5.0.min.js" integrity="sha256-xNzN2a4ltkB44Mc/Jz3pT4iU1cmeR0FkXs4pru/JxaQ="
+        crossorigin="anonymous"></script>
+
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css"
+        integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+        crossorigin=""/>
+
+        <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"
+        integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew=="
+        crossorigin=""></script>
+
+        <!-- using datatable -->
+        <link rel="stylesheet" href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css"/>
+        <script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js" ></script>
+
+        
+   <style>
+       #mapid { 
+           height: 100vh;
+           width: 50%;
+           float: left;
+        }
+        #idtable{
+            height: 100vh;
+            width: 50%;  
+            float: right;
+        }
+   </style>
+
+    </head>
+<body>
+    <div id="mapid"></div> 
+    <div id="idtable">
+        <table id="example" class="display" width="100%"></table>
+    </div>
+    
+    <script>
+        $( document ).ready(function() { 
+            var _datatable = [];
+            var featureBackup;
+            var Table;
+            var ArrayFeature = [];
+            //Khai bao map
+            var map = L.map('mapid').setView( [15.037749, 108.219835] , 8);
+
+            // khai bao ban do nen (tile map)
+            // link tham khao: https://leaflet-extras.github.io/leaflet-providers/preview/
+            var Basemap =  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            });
+           
+           var Vetinh =  L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+                attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+            });
+
+            // tao group layers
+            /* var Groupbasemap = L.layerGroup([ Basemap,Basemap2 ]); */
+            
+            //tao control layers
+            var baseMaps = {
+                "ban do nen thu 1": Basemap,
+                "Ve tinh": Vetinh
+            };
+
+
+            //add layer vao map
+            map.addLayer(Vetinh);
+            map.addLayer(Basemap);
+            /* map.addLayer(Basemap2); */
+
+            //Tao layer dang diem (marker)     L.marker([Lat,Lng]);
+            var markerLocation = [10.779260, 106.644066];
+            var marker = L.marker( markerLocation ).bindPopup('Hello I am marker!');
+            map.addLayer(marker);
+
+            //tao layer dang duong (polyline)
+            var latlng =  [
+                [10.779260, 106.644066],
+                [10.779260, 106.644066],
+                [10.775002, 106.646652]
+            ]; 
+            var polyline = L.polyline(latlng).bindPopup('Hello I am polyline!');;
+            map.addLayer(polyline);
+
+            //tao layer dang vung (polygon)
+            var latlgnPolygon = [
+                [10.779260, 106.644066],
+                [10.776260, 106.644066],
+                [10.776530, 106.654355],
+                [10.779260, 106.644066]
+            ]
+            var polygon = L.polygon(latlgnPolygon).bindPopup('Hello I am polygon!');;
+            map.addLayer(polygon);
+           
+            //add layers WMS from Geoserver
+            var VietnamTinh = L.tileLayer.wms('http://localhost:8080/geoserver/vietnam2k/wms',{
+                layers: 'vietnam2k:vnm_admbnda_adm1_gov_20200103' ,  // thay thế %3A ==> :
+                transparent: true,
+                format: 'image/png'
+            });
+
+            var OverlayMaps = {
+                "Lớp điểm": marker,
+                "Lớp đường": polyline,
+                "Lớp vùng": polygon,
+                "Việt Nam tỉnh": VietnamTinh
+            };
+            //Khoi tao control cho map
+            //L.control.layers( bản đồ nền,Lớp dữ liệu);
+            var baseMapControl = L.control.layers(baseMaps,OverlayMaps);  /* .addTo(map); */
+            //add control vao map
+            map.addControl(baseMapControl);
+
+            $.ajax({
+                url :"proxy.php?url="+encodeURIComponent("http://localhost:8080/geoserver/vietnam2k/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=vietnam2k%3Avnm_admbnda_adm1_gov_20200103&maxFeatures=100000&outputFormat=application%2Fjson"), // URL cần lấy dữ liệu 
+                type : "get", // chọn phương thức gửi là get
+                dateType:"json", // dữ liệu trả về dạng json
+                success : function (result){
+                    showAttribute(result);
+                    // goi function de ve du lieu geojson tra ve
+                    drawgeojson(result);
+                }
+            });
+            
+            function showAttribute(data){
+                var datajson = JSON.parse(data).features;
+                
+                for(var i = 0; i < datajson.length; i++) {
+                    //lay bound cua tung tinh
+                    var Feature = L.geoJSON(datajson[i],{ style:  {
+                            color: 'red'
+                        }
+                    });
+                    
+                    var Attribule = datajson[i].properties;
+                    var area = Attribule.shape_area;
+                    var name = Attribule.adm1_vi;
+                    // day du lieu vao _datatable qua moi vong lap
+                    _datatable.push([area,name,Feature]);	
+                    
+                    /* console.log(area);
+                    console.log(name); */
+                }
+                // khai bao bang 
+                Table =  $('#example').DataTable( {
+                    data: _datatable,
+                    "columnDefs": [
+                        {
+                            "targets": [ 2 ],
+                            "visible": false
+                        }
+                    ],
+                    columns: [
+                        { title: "Dien tich" },
+                        { title: "Ten" },
+                        { title: "Bound" }                       
+                    ]
+                } );
+                // get event click datatable
+                $('#example tbody').on( 'click', 'tr', function () {
+                    if ( $(this).hasClass('selected') ) {
+                        $(this).removeClass('selected');
+                    }
+                    else {
+                        Table.$('tr.selected').removeClass('selected');
+                        $(this).addClass('selected');
+                    }
+                    //lay du lieu cua hang
+                    var dataselected = Table.row(this).data()
+                    //check da co doi tuong click hay chua? --> neu co -->setStyle blue
+                    if(featureBackup !== undefined){
+                        featureBackup.setStyle(
+                            {
+                                color: "blue"
+                            }
+                        )
+                    }
+                    var FeatureSelected = dataselected[2];
+                    ArrayFeature.push(FeatureSelected);
+                    //check da click tren 2 lan 
+                    if(ArrayFeature.length >= 2){
+                        //lay ra doi tuong click truoc do
+                       var featurebefore = ArrayFeature[ArrayFeature.length-2]; 
+                       //xoa doi tuong khoi map
+                       map.removeLayer(featurebefore);
+                       
+                    }
+                    //get bound cua feature
+                    var bound = FeatureSelected.getBounds();
+                    //panto tinh duoc chon
+                    map.fitBounds(bound);
+                    //to dam doi tuong
+                    map.addLayer(FeatureSelected);
+                } );
+            
+            }
+
+            
+            function drawgeojson(data){
+                /* console.log('da nhan du lieu', data); */
+                var Features = JSON.parse(data).features;
+                
+                for(var i = 0; i < Features.length; i++){
+                    var geojson = Features[i];
+                    var myLayer = L.geoJSON(geojson, {
+                        style:  {
+                            color: 'blue',
+                            weight: 2,
+                            opacity: 0.6,
+                            dashArray: '1',
+                            fillOpacity: 0.6
+                        }
+                    }).on('click', function(Layer){
+
+                        if(featureBackup !== undefined){
+                            featureBackup.setStyle(
+                                {color :'blue'} 
+                            );
+                        }
+                        featureBackup = Layer.target;
+                        //highline layer click
+                        var featureClick = Layer.target;
+                        
+                        featureClick.setStyle(
+                            {color:'red'}
+                        )
+
+                       /*  var BBOX =map.getBounds()._southWest.lng+","+map.getBounds()._southWest.lat+","+map.getBounds()._northEast.lng+","
+                        +map.getBounds()._northEast.lat;
+                        var WIDTH= map.getSize().x;
+                        var HEIGHT = map.getSize().y;
+                        var X = Math.floor(map.layerPointToContainerPoint(Layer.layerPoint).x);
+                        var Y = Math.floor(map.layerPointToContainerPoint(Layer.layerPoint).y);
+                        // thay the thong so vao link;
+                        var url = "http://localhost:8080/geoserver/vietnam2k/wms?request=GetFeatureInfo&service=WMS&layers=vietnam2k%3Avnm_admbnda_adm1_gov_20200103&styles=stylevietnam&srs=EPSG:4326&format=image/png&bbox="+BBOX+"&width="+WIDTH+"&height="+HEIGHT+"&query_layers=vietnam2k%3Avnm_admbnda_adm1_gov_20200103&info_format=application/json&x="+X+"&y="+Y+"" */
+                        /* console.log(url); */
+                        //goi ham getdataClick() de lay du lieu ve
+                        
+                        /* getdataClick(url); */
+                       
+                        
+                        
+
+                    });
+
+                    /* .on('mouseover', function(Layer){
+                        console.log(Layer);
+                        var polygonClick = Layer.target;
+                        polygonClick.setStyle(
+                            {color:'red'}
+                        );
+                    }).on('mouseout', function(Layer){
+                        var polygonClick = Layer.target;
+                        polygonClick.setStyle(
+                            {color:'blue'}
+                        );
+                    }) */
+
+                   
+                    map.addLayer(myLayer);
+                }
+
+            }
+
+           
+            function getdataClick(url){
+                $.ajax({
+                    url :"proxy.php?url="+encodeURIComponent(url), // URL cần lấy dữ liệu 
+                    type : "get", // chọn phương thức gửi là get
+                    dateType:"json", // dữ liệu trả về dạng json
+                    success : function (result){
+                       console.log('thanh cong!  ',result) 
+                    }
+                });
+            }
+            
+        });
+        
+    </script>
+</body>
+</html>
