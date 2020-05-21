@@ -1,0 +1,15 @@
+
+#content{
+    overflow-y: hidden;
+    overflow-x: hidden;
+}
+.container-fluid{
+    height: 100%;
+    padding-right: 0 !important;
+}
+.row{
+    height: 100%;
+}
+#map{
+    height: 89%;
+}
